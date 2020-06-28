@@ -1,10 +1,18 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const path = require('path'); // Used to find absolute path in any OS
+const path = require('path');
+const fs = require('fs');
+
+const filePath = path.join(
+  path.dirname(process.mainModule.filename),
+  'writeHead.json'
+)
+
 const {
   google
 } = require('googleapis');
+
 const keys = require('./keys.json');
 
 const client = new google.auth.JWT( // json web token
@@ -22,11 +30,11 @@ client.authorize((err, tokens) => {
   console.log('success auth');
 })
 
-app.set('view engine', 'ejs'); // Setting the templating engine
+app.set('view engine', 'ejs');
 
-app.set('views', 'views'); // Not required to set if named views
+app.set('views', 'views');
 
-app.use(bodyParser.urlencoded({ // Used for text-only data, Cannot be used to parse binary data like image
+app.use(bodyParser.urlencoded({
   extended: false
 }));
 
@@ -34,21 +42,42 @@ app.get('/', (req, res, next) => {
   res.render('home');
 })
 
-app.post('/post-data', (req, res, next) => {
+app.post('/post-data', async (req, res, next) => {
   const gsapi = google.sheets({
     version: 'v4',
     auth: client
   })
-  const opt = {
-    spreadsheetId: '1KYJRhh_sOtyOqgBpnF7qoCGHVTAJdyxeltRZ41z-Qvo',
-    range: 'A1:B5'
-  }
-  gsapi.spreadsheets.values.get(opt)
-    .then(result => {
-      console.log(result);
-    })
-  console.log("request received", req.body.email);
-  return res.redirect('/');
+
+  fs.readFile(filePath, async (err, fileContent) => {
+    if (err) {
+      return res.render('500');
+    }
+    const {
+      headCount
+    } = JSON.parse(fileContent);
+    const input = [];
+    for (let key in req.body) {
+      input.push(req.body[key]);
+    }
+    const data = [];
+    data.push(input);
+    const writeOpt = {
+      spreadsheetId: '1KYJRhh_sOtyOqgBpnF7qoCGHVTAJdyxeltRZ41z-Qvo',
+      range: 'A' + headCount,
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: data
+      }
+    }
+    const result = await gsapi.spreadsheets.values.update(writeOpt);
+    console.log(result);
+    fs.writeFile(filePath, JSON.stringify({
+      headCount: headCount + 1
+    }), err => {
+      console.log(err);
+    });
+    return res.redirect('/');
+  });
 })
 
 const port = process.env.PORT || 8080;
