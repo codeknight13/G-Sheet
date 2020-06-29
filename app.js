@@ -107,7 +107,7 @@ app.post('/post-data', async (req, res, next) => {
         console.log('Email sent: ' + info.response);
       }
     });
-    res.sendStatus(200);
+    // res.sendStatus(200);
     // return res.redirect('/');
   });
 })
