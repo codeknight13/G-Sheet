@@ -93,7 +93,7 @@ app.post('/post-data', async (req, res, next) => {
       from: 'kirtivikram13@yahoo.com',
       to: req.body.email,
       subject: 'You Entered Some Data',
-      text: `
+      html: `
       <h2>Hey ${req.body.email}</h2>
       <p>You Entered Some Data in <a href="https://docs.google.com/spreadsheets/d/1KYJRhh_sOtyOqgBpnF7qoCGHVTAJdyxeltRZ41z-Qvo/edit#gid=0">Sheet</a></p>
       `
