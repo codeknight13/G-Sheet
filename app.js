@@ -43,12 +43,18 @@ app.get('/', (req, res, next) => {
   res.render('home');
 })
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.post('/post-data', async (req, res, next) => {
   const gsapi = google.sheets({
     version: 'v4',
     auth: client
   })
-
+  console.log(req.body);
   fs.readFile(filePath, async (err, fileContent) => {
     if (err) {
       return res.render('500');
@@ -106,8 +112,8 @@ app.post('/post-data', async (req, res, next) => {
         console.log('Email sent: ' + info.response);
       }
     });
-
-    return res.redirect('/');
+    res.sendStatus(200);
+    // return res.redirect('/');
   });
 })
 
