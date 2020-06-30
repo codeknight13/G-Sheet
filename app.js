@@ -94,13 +94,13 @@ app.post('/post-data', async (req, res, next) => {
       port: 465,
       secure: false,
       auth: {
-        user: 'Vikram_Lilhore@yahoo.com',
+        user: 'vikram_lilhore13@yahoo.com',
         pass: process.env.pass_new
       }
     });
     
     let mailOptions = {
-      from: 'Vikram_Lilhore@yahoo.com',
+      from: 'vikram_lilhore13@yahoo.com',
       to: req.body.email,
       subject: 'You Entered Some Data',
       html: `
