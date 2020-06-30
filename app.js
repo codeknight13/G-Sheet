@@ -39,6 +39,13 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST");
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 app.get('/', (req, res, next) => {
   res.render('home');
 })
@@ -48,7 +55,7 @@ app.post('/post-data', async (req, res, next) => {
     version: 'v4',
     auth: client
   })
-
+  
   fs.readFile(filePath, async (err, fileContent) => {
     if (err) {
       return res.render('500');
