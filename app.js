@@ -39,6 +39,8 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use(bodyParser.json());
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST");
@@ -114,12 +116,11 @@ app.post('/post-data', async (req, res, next) => {
         console.log('Email sent: ' + info.response);
       }
     });
-    // res.sendStatus(200);
-    // return res.redirect('/');
+    res.sendStatus(200);
   });
 })
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log('Server Started');
